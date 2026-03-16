@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 const GOLD = '#B7A57A'
@@ -73,10 +73,11 @@ const PROJECTS = [
 const VISIBLE = 3
 const MAX_OFFSET = PROJECTS.length - VISIBLE
 
-function ProjectCard({ project }) {
+function ProjectCard({ project, dragging }) {
   const cardRef = useRef()
 
   const handleMouseMove = (e) => {
+    if (dragging) return
     const card = cardRef.current
     if (!card) return
     const rect = card.getBoundingClientRect()
@@ -104,7 +105,7 @@ function ProjectCard({ project }) {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="tilt-card rounded-xl overflow-hidden cursor-default flex-shrink-0"
+      className="tilt-card rounded-xl overflow-hidden flex-shrink-0"
       style={{
         width: 'calc((100% - 40px) / 3)',
         scrollSnapAlign: 'start',
@@ -112,6 +113,7 @@ function ProjectCard({ project }) {
         border: '1px solid rgba(183,165,122,0.08)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
         transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
+        userSelect: 'none',
       }}
     >
       <div
@@ -146,6 +148,7 @@ function ProjectCard({ project }) {
             href={project.github}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={e => { if (dragging) e.preventDefault() }}
             className="p-2 rounded-lg transition-all duration-200 hover:scale-110 shrink-0"
             style={{
               background: 'rgba(183,165,122,0.05)',
@@ -226,34 +229,82 @@ function ArrowButton({ onClick, disabled, direction }) {
 
 export default function Projects() {
   const [offset, setOffset] = useState(0)
+  const [dragging, setDragging] = useState(false)
   const scrollRef = useRef()
+  const dragStart = useRef({ x: 0, scrollLeft: 0 })
+  const hasDragged = useRef(false)
+
+  const getCardStep = useCallback(() => {
+    const container = scrollRef.current
+    if (!container) return 0
+    return container.scrollWidth / PROJECTS.length + 20 / PROJECTS.length
+  }, [])
 
   const scrollToOffset = useCallback((newOffset) => {
     const container = scrollRef.current
     if (!container) return
-    const cardWidth = container.scrollWidth / PROJECTS.length
+    const cardWidth = (container.scrollWidth - (PROJECTS.length - 1) * 20) / PROJECTS.length
     container.scrollTo({ left: newOffset * (cardWidth + 20), behavior: 'smooth' })
   }, [])
-
-  const prev = () => {
-    const next = Math.max(0, offset - 1)
-    setOffset(next)
-    scrollToOffset(next)
-  }
-
-  const next = () => {
-    const next = Math.min(MAX_OFFSET, offset + 1)
-    setOffset(next)
-    scrollToOffset(next)
-  }
 
   const handleScroll = useCallback(() => {
     const container = scrollRef.current
     if (!container) return
-    const cardWidth = container.scrollWidth / PROJECTS.length
+    const cardWidth = (container.scrollWidth - (PROJECTS.length - 1) * 20) / PROJECTS.length
     const newOffset = Math.round(container.scrollLeft / (cardWidth + 20))
     setOffset(Math.min(MAX_OFFSET, Math.max(0, newOffset)))
   }, [])
+
+  // Mouse drag-to-scroll
+  const onMouseDown = useCallback((e) => {
+    const container = scrollRef.current
+    if (!container) return
+    hasDragged.current = false
+    dragStart.current = { x: e.clientX, scrollLeft: container.scrollLeft }
+    setDragging(true)
+  }, [])
+
+  const onMouseMove = useCallback((e) => {
+    if (!dragging) return
+    const dx = e.clientX - dragStart.current.x
+    if (Math.abs(dx) > 4) hasDragged.current = true
+    scrollRef.current.scrollLeft = dragStart.current.scrollLeft - dx
+  }, [dragging])
+
+  const onMouseUp = useCallback(() => {
+    if (!dragging) return
+    setDragging(false)
+    // Snap to nearest card after drag
+    handleScroll()
+    const container = scrollRef.current
+    if (!container) return
+    const cardWidth = (container.scrollWidth - (PROJECTS.length - 1) * 20) / PROJECTS.length
+    const newOffset = Math.round(container.scrollLeft / (cardWidth + 20))
+    const clamped = Math.min(MAX_OFFSET, Math.max(0, newOffset))
+    setOffset(clamped)
+    container.scrollTo({ left: clamped * (cardWidth + 20), behavior: 'smooth' })
+  }, [dragging, handleScroll])
+
+  useEffect(() => {
+    window.addEventListener('mouseup', onMouseUp)
+    window.addEventListener('mousemove', onMouseMove)
+    return () => {
+      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mousemove', onMouseMove)
+    }
+  }, [onMouseUp, onMouseMove])
+
+  const prev = () => {
+    const n = Math.max(0, offset - 1)
+    setOffset(n)
+    scrollToOffset(n)
+  }
+
+  const next = () => {
+    const n = Math.min(MAX_OFFSET, offset + 1)
+    setOffset(n)
+    scrollToOffset(n)
+  }
 
   return (
     <section id="projects" className="py-32 px-6 md:px-16 max-w-7xl mx-auto">
@@ -278,7 +329,7 @@ export default function Projects() {
           className="text-xs"
           style={{ color: '#2e2e2e', fontFamily: 'JetBrains Mono, monospace' }}
         >
-          // hover the cards for 3D interaction
+          // drag or use arrows to scroll
         </motion.p>
 
         <div className="flex items-center gap-3">
@@ -304,9 +355,10 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* Scrollable carousel */}
+      {/* Carousel */}
       <div
         ref={scrollRef}
+        onMouseDown={onMouseDown}
         onScroll={handleScroll}
         className="flex gap-5"
         style={{
@@ -314,13 +366,12 @@ export default function Projects() {
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          cursor: dragging ? 'grabbing' : 'grab',
           WebkitOverflowScrolling: 'touch',
-          cursor: 'grab',
         }}
       >
-        <style>{`.tilt-card-scroll::-webkit-scrollbar { display: none; }`}</style>
         {PROJECTS.map(project => (
-          <ProjectCard key={project.id} project={project} />
+          <ProjectCard key={project.id} project={project} dragging={dragging} />
         ))}
       </div>
 

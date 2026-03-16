@@ -52,6 +52,22 @@ const PROJECTS = [
       'Intuitive UI for all skill levels',
     ],
   },
+  {
+    id: 3,
+    title: 'FinTrackr',
+    subtitle: 'Full-Stack Personal Finance SaaS',
+    date: '2025',
+    description:
+      'Built a full-stack SaaS app for personal finance tracking with user authentication, Stripe subscription payments, and interactive charts. Features a React frontend with a Node.js/Express backend and PostgreSQL database.',
+    tags: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Prisma', 'Stripe'],
+    icon: '💰',
+    github: 'https://github.com/Ayubmo-2',
+    highlights: [
+      'JWT auth with refresh tokens',
+      'Stripe Pro subscription ($5/mo)',
+      'Interactive finance dashboards',
+    ],
+  },
 ]
 
 function ProjectCard({ project, index }) {

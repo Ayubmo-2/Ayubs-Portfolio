@@ -10,6 +10,7 @@ Check it out here: [ayubmo-2.github.io/Ayubs-Portfolio](https://ayubmo-2.github.
 
 | Project | Live Demo | Repo |
 |---------|-----------|------|
+| FinTrackr | Coming soon | [GitHub](https://github.com/Ayubmo-2) |
 | Paladins Quest | [Play here](https://ayubmo-2.github.io/Paladins-Quest/) | [GitHub](https://github.com/Ayubmo-2/Paladins-Quest) |
 | Sports Trivia Maze | Java desktop app | [GitHub](https://github.com/Ayubmo-2/Sports-Trivia-Maze) |
 

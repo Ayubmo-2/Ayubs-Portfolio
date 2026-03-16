@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useRef, useState, useCallback } from 'react'
+import { motion } from 'framer-motion'
 
 const GOLD = '#B7A57A'
 
@@ -71,7 +71,7 @@ const PROJECTS = [
 ]
 
 const VISIBLE = 3
-const MAX_OFFSET = PROJECTS.length - VISIBLE // 1
+const MAX_OFFSET = PROJECTS.length - VISIBLE
 
 function ProjectCard({ project }) {
   const cardRef = useRef()
@@ -106,7 +106,8 @@ function ProjectCard({ project }) {
       onMouseLeave={handleMouseLeave}
       className="tilt-card rounded-xl overflow-hidden cursor-default flex-shrink-0"
       style={{
-        width: 'calc((100% - 2 * 20px) / 3)',
+        width: 'calc((100% - 40px) / 3)',
+        scrollSnapAlign: 'start',
         background: '#0f0f0f',
         border: '1px solid rgba(183,165,122,0.08)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
@@ -225,9 +226,34 @@ function ArrowButton({ onClick, disabled, direction }) {
 
 export default function Projects() {
   const [offset, setOffset] = useState(0)
+  const scrollRef = useRef()
 
-  const prev = () => setOffset(o => Math.max(0, o - 1))
-  const next = () => setOffset(o => Math.min(MAX_OFFSET, o + 1))
+  const scrollToOffset = useCallback((newOffset) => {
+    const container = scrollRef.current
+    if (!container) return
+    const cardWidth = container.scrollWidth / PROJECTS.length
+    container.scrollTo({ left: newOffset * (cardWidth + 20), behavior: 'smooth' })
+  }, [])
+
+  const prev = () => {
+    const next = Math.max(0, offset - 1)
+    setOffset(next)
+    scrollToOffset(next)
+  }
+
+  const next = () => {
+    const next = Math.min(MAX_OFFSET, offset + 1)
+    setOffset(next)
+    scrollToOffset(next)
+  }
+
+  const handleScroll = useCallback(() => {
+    const container = scrollRef.current
+    if (!container) return
+    const cardWidth = container.scrollWidth / PROJECTS.length
+    const newOffset = Math.round(container.scrollLeft / (cardWidth + 20))
+    setOffset(Math.min(MAX_OFFSET, Math.max(0, newOffset)))
+  }, [])
 
   return (
     <section id="projects" className="py-32 px-6 md:px-16 max-w-7xl mx-auto">
@@ -256,12 +282,11 @@ export default function Projects() {
         </motion.p>
 
         <div className="flex items-center gap-3">
-          {/* Dot indicators */}
           <div className="flex gap-1.5 mr-2">
             {Array.from({ length: MAX_OFFSET + 1 }).map((_, i) => (
               <button
                 key={i}
-                onClick={() => setOffset(i)}
+                onClick={() => { setOffset(i); scrollToOffset(i) }}
                 className="rounded-full transition-all duration-300"
                 style={{
                   width: offset === i ? 16 : 6,
@@ -279,18 +304,24 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* Carousel viewport */}
-      <div style={{ overflow: 'hidden' }}>
-        <motion.div
-          className="flex gap-5"
-          animate={{ x: `calc(-${offset} * (100% / ${VISIBLE} + 20px / ${VISIBLE} * (${VISIBLE} - 1) / ${VISIBLE} + 20px / ${VISIBLE}))` }}
-          transition={{ type: 'spring', stiffness: 300, damping: 35 }}
-          style={{ willChange: 'transform' }}
-        >
-          {PROJECTS.map(project => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </motion.div>
+      {/* Scrollable carousel */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex gap-5"
+        style={{
+          overflowX: 'scroll',
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          cursor: 'grab',
+        }}
+      >
+        <style>{`.tilt-card-scroll::-webkit-scrollbar { display: none; }`}</style>
+        {PROJECTS.map(project => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
       </div>
 
       <motion.div

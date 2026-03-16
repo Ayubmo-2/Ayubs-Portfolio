@@ -1,16 +1,40 @@
-# React + Vite
+# Ayubs Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal portfolio website I built as a student to show off my projects and skills.
 
-Currently, two official plugins are available:
+## Live Site
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Check it out here: [ayubmo-2.github.io/Ayubs-Portfolio](https://ayubmo-2.github.io/Ayubs-Portfolio/)
 
-## React Compiler
+## My Projects
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Project | Live Demo | Repo |
+|---------|-----------|------|
+| Paladins Quest | [Play here](https://ayubmo-2.github.io/Paladins-Quest/) | [GitHub](https://github.com/Ayubmo-2/Paladins-Quest) |
+| Sports Trivia Maze | Java desktop app | [GitHub](https://github.com/Ayubmo-2/Sports-Trivia-Maze) |
 
-## Expanding the ESLint configuration
+## What I Used to Build This
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React** - for building the UI components
+- **Vite** - for fast development and bundling
+- **Three.js** - for 3D graphics
+- **Framer Motion & GSAP** - for animations
+- **Tailwind CSS** - for styling
+
+## How to Run It Locally
+
+Make sure you have Node.js installed, then:
+
+```bash
+npm install
+npm run dev
+```
+
+Open your browser and go to `http://localhost:5173`
+
+## How to Build for Production
+
+```bash
+npm run build
+```
+

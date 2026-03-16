@@ -4,7 +4,7 @@ A personal portfolio website I built as a student to show off my projects and sk
 
 ## Live Site
 
-Check it out here: [ayubmo-2.github.io/Ayubs-Portfolio](https://ayubmo-2.github.io/Ayubs-Portfolio/)
+Check it out here: [Portfolio](https://ayubmo-2.github.io/Ayubs-Portfolio/)
 
 ## My Projects
 

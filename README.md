@@ -23,18 +23,7 @@ Check it out here: [ayubmo-2.github.io/Ayubs-Portfolio](https://ayubmo-2.github.
 - **Framer Motion & GSAP** - for animations
 - **Tailwind CSS** - for styling
 
-## How to Run It Locally
 
-Make sure you have Node.js installed, then:
-
-```bash
-npm install
-npm run dev
-```
-
-Open your browser and go to `http://localhost:5173`
-
-## How to Build for Production
 
 ```bash
 npm run build

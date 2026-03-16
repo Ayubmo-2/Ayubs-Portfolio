@@ -1,59 +1,11 @@
-import { useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const GOLD = '#B7A57A'
 
 const PROJECTS = [
   {
     id: 0,
-    title: "Paladin's Quest",
-    subtitle: '2D Roguelike Dungeon Game',
-    date: 'December 2024',
-    description:
-      'Led a team of four to develop a 2D top-down roguelike dungeon game featuring medieval-themed combat. Designed enemy AI for skeletons, goblins, and boss fights, with a level progression system for health, speed, and attack power.',
-    tags: ['JavaScript', 'Python', 'Pygame', 'AI Systems', 'Game Dev'],
-    icon: '⚔️',
-    github: 'https://github.com/',
-    highlights: [
-      'Led team of 4 engineers',
-      'Enemy AI with dynamic difficulty',
-      'Level progression system',
-    ],
-  },
-  {
-    id: 1,
-    title: 'Sports Trivia Maze',
-    subtitle: 'Interactive Database-Backed Game',
-    date: 'August 2024',
-    description:
-      'Created an interactive maze game using Java and GUI-based design, integrating sports trivia questions to guide players. Implemented SQLite database to store and manage player responses and game results for personalization.',
-    tags: ['Java', 'SQLite', 'Swing', 'GUI', 'Database'],
-    icon: '🏆',
-    github: 'https://github.com/',
-    highlights: [
-      'SQLite persistence layer',
-      'Question-based navigation',
-      'Player result tracking',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Java Paint Project',
-    subtitle: 'Full-Featured Digital Art App',
-    date: 'March 2024',
-    description:
-      'Developed a full painting application using Java and Swing, allowing users to create and manipulate digital artwork. Implemented a wide range of brush shapes, color selection tools, and an intuitive user interface.',
-    tags: ['Java', 'Swing', 'UI Design', 'OOP', 'Desktop App'],
-    icon: '🎨',
-    github: 'https://github.com/',
-    highlights: [
-      'Multiple brush shapes & tools',
-      'Full color selection system',
-      'Intuitive UI for all skill levels',
-    ],
-  },
-  {
-    id: 3,
     title: 'FinTrackr',
     subtitle: 'Full-Stack Personal Finance SaaS',
     date: '2025',
@@ -68,58 +20,104 @@ const PROJECTS = [
       'Interactive finance dashboards',
     ],
   },
+  {
+    id: 1,
+    title: "Paladin's Quest",
+    subtitle: '2D Roguelike Dungeon Game',
+    date: 'December 2024',
+    description:
+      'Led a team of four to develop a 2D top-down roguelike dungeon game featuring medieval-themed combat. Designed enemy AI for skeletons, goblins, and boss fights, with a level progression system for health, speed, and attack power.',
+    tags: ['JavaScript', 'Python', 'Pygame', 'AI Systems', 'Game Dev'],
+    icon: '⚔️',
+    github: 'https://ayubmo-2.github.io/Paladins-Quest/',
+    highlights: [
+      'Led team of 4 engineers',
+      'Enemy AI with dynamic difficulty',
+      'Level progression system',
+    ],
+  },
+  {
+    id: 2,
+    title: 'Sports Trivia Maze',
+    subtitle: 'Interactive Database-Backed Game',
+    date: 'August 2024',
+    description:
+      'Created an interactive maze game using Java and GUI-based design, integrating sports trivia questions to guide players. Implemented SQLite database to store and manage player responses and game results for personalization.',
+    tags: ['Java', 'SQLite', 'Swing', 'GUI', 'Database'],
+    icon: '🏆',
+    github: 'https://github.com/Ayubmo-2/Sports-Trivia-Maze',
+    highlights: [
+      'SQLite persistence layer',
+      'Question-based navigation',
+      'Player result tracking',
+    ],
+  },
+  {
+    id: 3,
+    title: 'Java Paint Project',
+    subtitle: 'Full-Featured Digital Art App',
+    date: 'March 2024',
+    description:
+      'Developed a full painting application using Java and Swing, allowing users to create and manipulate digital artwork. Implemented a wide range of brush shapes, color selection tools, and an intuitive user interface.',
+    tags: ['Java', 'Swing', 'UI Design', 'OOP', 'Desktop App'],
+    icon: '🎨',
+    github: 'https://github.com/Ayubmo-2',
+    highlights: [
+      'Multiple brush shapes & tools',
+      'Full color selection system',
+      'Intuitive UI for all skill levels',
+    ],
+  },
 ]
 
-function ProjectCard({ project, index }) {
+const VISIBLE = 3
+const MAX_OFFSET = PROJECTS.length - VISIBLE // 1
+
+function ProjectCard({ project }) {
   const cardRef = useRef()
 
   const handleMouseMove = (e) => {
     const card = cardRef.current
     if (!card) return
     const rect = card.getBoundingClientRect()
-    const x  = e.clientX - rect.left
-    const y  = e.clientY - rect.top
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
     const cx = rect.width / 2
     const cy = rect.height / 2
     const rx = ((y - cy) / cy) * 7
     const ry = ((cx - x) / cx) * 7
-    card.style.transform  = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.02, 1.02, 1.02)`
-    card.style.boxShadow  = '0 24px 50px rgba(0,0,0,0.6), 0 0 30px rgba(183,165,122,0.08)'
+    card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.02,1.02,1.02)`
+    card.style.boxShadow = '0 24px 50px rgba(0,0,0,0.6), 0 0 30px rgba(183,165,122,0.08)'
     card.style.borderColor = 'rgba(183,165,122,0.25)'
   }
 
   const handleMouseLeave = () => {
     const card = cardRef.current
     if (!card) return
-    card.style.transform   = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)'
-    card.style.boxShadow   = '0 4px 20px rgba(0,0,0,0.4)'
+    card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)'
+    card.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)'
     card.style.borderColor = 'rgba(183,165,122,0.08)'
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, delay: index * 0.15 }}
+    <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="tilt-card rounded-xl overflow-hidden cursor-default"
+      className="tilt-card rounded-xl overflow-hidden cursor-default flex-shrink-0"
       style={{
-        background:   '#0f0f0f',
-        border:       '1px solid rgba(183,165,122,0.08)',
-        boxShadow:    '0 4px 20px rgba(0,0,0,0.4)',
+        width: 'calc((100% - 2 * 20px) / 3)',
+        background: '#0f0f0f',
+        border: '1px solid rgba(183,165,122,0.08)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+        transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
       }}
     >
-      {/* Thin gold top line */}
       <div
         className="h-px w-full"
         style={{ background: 'linear-gradient(90deg, transparent, rgba(183,165,122,0.4), transparent)' }}
       />
-
       <div className="p-7">
-        {/* Header row */}
         <div className="flex items-start justify-between mb-5">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
@@ -143,7 +141,6 @@ function ProjectCard({ project, index }) {
               {project.subtitle}
             </p>
           </div>
-
           <a
             href={project.github}
             target="_blank"
@@ -194,11 +191,44 @@ function ProjectCard({ project, index }) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </div>
+  )
+}
+
+function ArrowButton({ onClick, disabled, direction }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="flex items-center justify-center rounded-lg transition-all duration-200"
+      style={{
+        width: 36,
+        height: 36,
+        background: disabled ? 'rgba(255,255,255,0.02)' : 'rgba(183,165,122,0.06)',
+        border: `1px solid ${disabled ? 'rgba(255,255,255,0.04)' : 'rgba(183,165,122,0.15)'}`,
+        color: disabled ? '#333' : GOLD,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {direction === 'left' ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      )}
+    </button>
   )
 }
 
 export default function Projects() {
+  const [offset, setOffset] = useState(0)
+
+  const prev = () => setOffset(o => Math.max(0, o - 1))
+  const next = () => setOffset(o => Math.min(MAX_OFFSET, o + 1))
+
   return (
     <section id="projects" className="py-32 px-6 md:px-16 max-w-7xl mx-auto">
       <motion.div
@@ -213,21 +243,54 @@ export default function Projects() {
         <div className="flex-1 h-px" style={{ background: 'rgba(183,165,122,0.1)' }} />
       </motion.div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-        className="text-xs mb-14"
-        style={{ color: '#2e2e2e', fontFamily: 'JetBrains Mono, monospace' }}
-      >
-        // hover the cards for 3D interaction
-      </motion.p>
+      <div className="flex items-center justify-between mb-14">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="text-xs"
+          style={{ color: '#2e2e2e', fontFamily: 'JetBrains Mono, monospace' }}
+        >
+          // hover the cards for 3D interaction
+        </motion.p>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {PROJECTS.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} />
-        ))}
+        <div className="flex items-center gap-3">
+          {/* Dot indicators */}
+          <div className="flex gap-1.5 mr-2">
+            {Array.from({ length: MAX_OFFSET + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setOffset(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: offset === i ? 16 : 6,
+                  height: 6,
+                  background: offset === i ? GOLD : 'rgba(183,165,122,0.2)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+          <ArrowButton onClick={prev} disabled={offset === 0} direction="left" />
+          <ArrowButton onClick={next} disabled={offset === MAX_OFFSET} direction="right" />
+        </div>
+      </div>
+
+      {/* Carousel viewport */}
+      <div style={{ overflow: 'hidden' }}>
+        <motion.div
+          className="flex gap-5"
+          animate={{ x: `calc(-${offset} * (100% / ${VISIBLE} + 20px / ${VISIBLE} * (${VISIBLE} - 1) / ${VISIBLE} + 20px / ${VISIBLE}))` }}
+          transition={{ type: 'spring', stiffness: 300, damping: 35 }}
+          style={{ willChange: 'transform' }}
+        >
+          {PROJECTS.map(project => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </motion.div>
       </div>
 
       <motion.div
@@ -238,7 +301,7 @@ export default function Projects() {
         className="text-center mt-14"
       >
         <a
-          href="https://github.com/"
+          href="https://github.com/Ayubmo-2"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-xs transition-all duration-300"
